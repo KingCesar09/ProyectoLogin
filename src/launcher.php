@@ -11,3 +11,5 @@ foreach($rutas as $archivo) { //Para importar los archivos que tenemos en routes
         require $rutaArchivo;
     }
 }
+
+Route::submit();

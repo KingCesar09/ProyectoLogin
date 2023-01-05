@@ -19,9 +19,9 @@
 
 //$controladorUsuarios = new ControladorUsuarios();
 //$respuesta = $controladorUsuarios->insertarUsuario([
-//    "nombres" => "JJ2",
-//    "edad" => 22,
-//    "email" => "email3@gmail.com",
+//    "nombres" => "Santiago Rodriguez",
+//    "edad" => 23,
+//    "email" => "santiago@gmail.com",
 //    "asdfasfda" => "sdfasdfa"
 //]);
 //$usuario = [
