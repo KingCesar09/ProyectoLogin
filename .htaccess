@@ -1,5 +1,2 @@
-Options -Indexes
-RewriteEngine on
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.php?uri=$1 [NC,L,QSA]
+RewriteEngine On
+RewriteRule ^([a-z]+)\/?([a-z]*)\/?([0-9]*)$ router.php?controller=$1&action=$2&id=$3
