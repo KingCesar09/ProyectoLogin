@@ -1,6 +1,7 @@
 <?php
 include_once "models/DB.php";
 include_once "models/Tarea.php";
+include_once "utils/defaults.php";
 
 $controller = $_GET['controller'];
 $action = $_GET['action'];
@@ -10,6 +11,7 @@ if (empty($action))
     $action = "index";
 
 $ctrlName = $controller . "Controller";
+include "./controllers/".$ctrlName.".php";
 $ctrl = new $ctrlName;
 $ctrl->{$action}();
 
