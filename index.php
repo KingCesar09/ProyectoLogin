@@ -2,4 +2,4 @@
 
 require_once('Routes/rutas.php');
  
-rutas();
+router();

@@ -1,48 +1,61 @@
 <?php
-require_once('config/db.php')
 
-class UserModel {
-    
+require_once 'config/db.php';
+
+class UserModel extends db {
+    protected $db;
+
+    public function __construct(){
+        $this->db = parent::conexion();
+    }
+    //Obtener todos los usuarios
     public function getAll() {
-        // Obtener todos los usuarios
-        $query = $this->db->prepare('SELECT * FROM users');
-        $query->execute();
-        return $query->fetchAll();
+        $query = "SELECT * FROM users WHERE deleted = 0";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return json_encode($users);
     }
-
+    //Obtener un usuario por el ID
     public function get($id) {
-        // Obtener un usuario específico por su ID
-        $query = $this->db->prepare('SELECT * FROM users WHERE id = :id');
-        $query->bindValue(':id', $id);
-        $query->execute();
-        return $query->fetch();
+        $query = "SELECT * FROM users WHERE id = :id AND deleted = 0";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        return json_encode($user);
     }
-
+    //Crear un nuevo usuario
     public function create($data) {
-        // Crear un nuevo usuario
-        $query = $this->db->prepare('INSERT INTO users (name, email, password) VALUES (:name, :email, :password)');
-        $query->bindValue(':name', $data['name']);
-        $query->bindValue(':email', $data['email']);
-        $query->bindValue(':password', password_hash($data['password'], PASSWORD_DEFAULT));
-        $query->execute();
-        return $this->get($this->db->lastInsertId());
+        $query = "INSERT INTO users (name, email, password) VALUES (:name, :email, :password)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':name', $data['name']);
+        $stmt->bindParam(':email', $data['email']);
+        $stmt->bindParam(':password', password_hash($data['password'], PASSWORD_DEFAULT));
+        $stmt->execute();
+        return json_encode(['message' => 'Usuario creado con exito']);
     }
-
-    public function update($id, $data) {
-        // Actualizar un usuario específico por su ID
-        $query = $this->db->prepare('UPDATE users SET name = :name, email = :email WHERE id = :id');
-        $query->bindValue(':id', $id);
-        $query->bindValue(':name', $data['name']);
-        $query->bindValue(':email', $data['email']);
-        $query->execute();
-        return $this->get($id);
+    //Autenticar
+    public function auth($data) {
+        $query = "SELECT * FROM users WHERE email = :email AND deleted = 0";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':email', $data['email']);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if (!$user) {
+            return json_encode(['error' => 'Correo o contrasena invalida']);
+        }
+        if (password_verify($data['password'], $user['password'])) {
+            return json_encode(['message' => 'Authentication successful']);
+        }
+        return json_encode(['error' => 'Correo o contrasena invalida']);
     }
-
+    //Borrado logico
     public function delete($id) {
-        // Eliminar un usuario específico por su ID
-        $query = $this->db->prepare('DELETE FROM users WHERE id = :id');
-        $query->bindValue(':id', $id);
-        $query->execute();
-        return true;
+        $query = "UPDATE users SET deleted = 1 WHERE id = :id";
+        $stmt = $this->db->prepare($query);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return json_encode(['message' => 'El usuario ha sido eliminado']);
     }
 }
